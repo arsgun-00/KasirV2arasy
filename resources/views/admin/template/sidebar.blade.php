@@ -84,6 +84,17 @@
                             </a>
                         </div>
 
+                        @if (Auth::user()->role == "admin")
+<div class="menu-item">
+    <a class="menu-link text-hover-gray-300" href="{{ route('manage-user.index') }}">
+        <span class="menu-icon">
+            <i class="fas fa-th text-white fs-1"></i>
+        </span>
+        <span class="menu-title text-white text-hover-gray-300">Manage User</span>
+    </a>
+</div>
+@endif
+
                         <div class="menu-item">
                             <a class="menu-link text-hover-gray-300" href="javascript:void(0);"
                                 onclick="event.preventDefault(); document.getElementById('logout-form').submit();">

@@ -4,8 +4,11 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\PenjualanController;
 use App\Http\Controllers\ProdukController;
 use App\Http\Controllers\UserController;
+
+
 use App\Models\Produk;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\ManageUserController;
 
 
 Route::get('/',[UserController::class,'login'])->name('login');
@@ -41,5 +44,10 @@ Route::group(['middleware' => ['auth']], function () {
     Route::get('penjualan/bayarCash/{id}',[PenjualanController::class,'bayarCash'])->name('penjualan.bayarCash');
     Route::post('penjualan/bayarCash',[PenjualanController::class,'bayarCashStore'])->name('penjualan.bayarCashStore');
     Route::get('penjualan/nota/{id}',[PenjualanController::class,'nota'])->name('penjualan.nota');
+});
+
+
+Route::middleware(['auth', 'role:admin'])->group(function () {
+    Route::get('/manage-user', [ManageUserController::class, 'index'])->name('manage-user.index');
 });
 
