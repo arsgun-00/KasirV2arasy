@@ -50,7 +50,7 @@
                         @endif
 
                     </div>
-                    <form action="{{ route('penjualan.store') }}" method="post">
+                    <form action="{{ route('penjualan.store') }}" method="post" onsubmit="return validateForm()">
                         <div class="card-body">
                             <table id="example1" class="table table-bordered table-striped">
 
@@ -140,43 +140,43 @@
 
     <script>
         function tambahProduk() {
-            const newArrow = `
+            const newRow = `
                 <tr>
-                                            <td>
-                                                <select name="ProdukId[]" id="id_produk" class="form-control kode-produk" onchange="pilihProduk(this)">
-                                                    <option value="">Pilih Produk</option>
-                                                    @foreach ($produks as $produk)
-                                                        <option value="{{ $produk->id }}" data-harga="{{ $produk->Harga }}" >{{ $produk->NamaProduk }}
-                                                        </option>
-                                                    @endforeach
-                                                </select>
-
-                                            </td>
-                                            <td>
-                                                <input type="text" name="harga[]" id="harga" class="form-control harga" readonly>
-                                            </td>
-                                            <td>
-                                                <input type="number" name="JumlahProduk[]" id="JumlahProduk" class="form-control jumlahProduk" oninput="hitungTotal(this)">
-                                            </td>
-                                            <td>
-                                                <input type="text" name="TotalHarga[]" id="TotalHarga" class="form-control totalHarga" readonly>
-                                            </td>
-                                            <td>
-                                                <button type="button" class="btn btn-danger" onclick="hapusProduk(this)">Hapus</button>
-                                            </td>
-                                        </tr>
-                `;
-            $('#penjualan').append(newArrow);
+                    <td>
+                        <select name="ProdukId[]" class="form-control kode-produk" onchange="pilihProduk(this)">
+                            <option value="">Pilih Produk</option>
+                            @foreach ($produks as $produk)
+                                <option value="{{ $produk->id }}" data-harga="{{ $produk->Harga }}">
+                                    {{ $produk->NamaProduk }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </td>
+                    <td>
+                        <input type="text" name="harga[]" class="form-control harga" disabled>
+                    </td>
+                    <td>
+                        <input type="number" name="JumlahProduk[]" class="form-control jumlahProduk" oninput="hitungTotal(this)">
+                    </td>
+                    <td>
+                        <input type="text" name="TotalHarga[]" class="form-control totalHarga" disabled>
+                    </td>
+                    <td>
+                        <button type="button" class="btn btn-danger" onclick="hapusProduk(this)">Hapus</button>
+                    </td>
+                </tr>
+            `;
+            $('#penjualan').append(newRow);
         }
 
         function hapusProduk(buttonElement) {
             $(buttonElement).closest('tr').remove();
+            hitungTotalAkhir();
         }
 
         function pilihProduk(produk) {
             const selectOption = produk.options[produk.selectedIndex];
             const row = $(produk).closest('tr');
-
             const harga = $(selectOption).data('harga');
 
             const selectedKode = produk.value;
@@ -193,6 +193,15 @@
             const row = $(inputElement).closest('tr');
             const harga = parseFloat(row.find('.harga').val());
             const jumlahProduk = parseFloat(inputElement.value);
+
+            if (jumlahProduk <= 0) {
+                alert('Jumlah produk harus lebih dari 0.');
+                row.find('.jumlahProduk').val('');
+                row.find('.totalHarga').val('');
+                hitungTotalAkhir();
+                return;
+            }
+
             const totalHarga = harga * jumlahProduk;
             row.find('.totalHarga').val(totalHarga);
 
@@ -208,6 +217,24 @@
 
             $('#total').val(total);
         }
+
+        function validateForm() {
+            let isValid = true;
+
+            $('#penjualan tr').each(function () {
+                const produk = $(this).find('.kode-produk').val();
+                const jumlah = $(this).find('.jumlahProduk').val();
+
+                if (!produk || !jumlah) {
+                    isValid = false;
+                    alert('Pastikan semua produk dan jumlah telah diisi.');
+                    return false; // Break the loop
+                }
+            });
+
+            return isValid;
+        }
     </script>
+
 
 @endsection

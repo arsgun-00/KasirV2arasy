@@ -69,6 +69,7 @@
                                 <tr>
                                     <th>No</th>
                                     <th>Tanggal Penjualan</th>
+                                    <th>Produk</th>
                                     <th>Harga</th>
                                     <th>Penjualan</th>
                                     <th>Aksi</th>
@@ -87,32 +88,27 @@
 @endsection
 
 @section('script')
+<script src="{{ asset('') }}plugins/datatables/jquery.dataTables.min.js"></script>
+    <script src="{{ asset('') }}plugins/datatables-bs4/js/dataTables.bootstrap4.min.js"></script>
+    <script src="{{ asset('') }}plugins/datatables-responsive/js/dataTables.responsive.min.js"></script>
+    <script src="{{ asset('') }}plugins/datatables-responsive/js/responsive.bootstrap4.min.js"></script>
+    <script src="{{ asset('') }}plugins/datatables-buttons/js/dataTables.buttons.min.js"></script>
+    <script src="{{ asset('') }}plugins/datatables-buttons/js/buttons.bootstrap4.min.js"></script>
+    <script src="{{ asset('') }}plugins/jszip/jszip.min.js"></script>
+    <script src="{{ asset('') }}plugins/pdfmake/pdfmake.min.js"></script>
+    <script src="{{ asset('') }}plugins/pdfmake/vfs_fonts.js"></script>
+    <script src="{{ asset('') }}plugins/datatables-buttons/js/buttons.html5.min.js"></script>
+    <script src="{{ asset('') }}plugins/datatables-buttons/js/buttons.print.min.js"></script>
+    <script src="{{ asset('') }}plugins/datatables-buttons/js/buttons.colVis.min.js"></script>
     <script>
-        $(document).ready(function () {
-            let table = $('#table-produk').DataTable({
-                processing: true,
-                serverSide: true,
-                responsive: false,
-                ajax: {
-                    url: "{{ route('penjualan.datatable') }}", // Ganti dengan URL yang sesuai
-                    type: 'GET',
-                },
-                columns: [
-                    { data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false }, // Nomor urut
-                    { data: 'TanggalPenjualan', name: 'TanggalPenjualan' }, // Tanggal
-                    { data: 'TotalHarga', name: 'TotalHarga' }, // Harga
-                    { data: 'UsersId', name: 'UsersId' }, // Jumlah Produk
-                    { data: 'action', name: 'action' }, // Aksi
-                ],
-                button: ["copy", "csv", "excel", "pdf", "print"]
-                ,
-                order: [
-                    [0, 'desc']
-                ]
-            });
-
+        $(function() {
+            $("#example1").DataTable({
+                "responsive": true,
+                "lengthChange": false,
+                "autoWidth": false,
+                "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
+            }).buttons().container().appendTo('#example1_wrapper .col-md-6:eq(0)');
         });
     </script>
-
 
 @endsection

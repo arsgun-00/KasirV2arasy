@@ -44,7 +44,7 @@ class PenjualanController extends Controller
      */
     public function store(Request $request)
     {
-        // dd($request->all());
+
         $validate = $request->validate([
             'ProdukId' => 'required',
             'JumlahProduk' => 'required',
@@ -165,23 +165,31 @@ class PenjualanController extends Controller
         }
         return view('admin.penjualan.nota', compact('penjualan', 'detailpenjualan', 'totalBayar', 'kembalian'));
     }
+
     public function datatable()
     {
         $penjualans = Penjualan::join('users', 'penjualans.UsersId', '=', 'users.id')
-            ->select('penjualans.id', 'penjualans.TanggalPenjualan', 'penjualans.TotalHarga', 'users.name as UsersId')
+            ->join('detail_penjualans', 'penjualans.id', '=', 'detail_penjualans.PenjualanId')
+            ->join('produks', 'detail_penjualans.ProdukId', '=', 'produks.id')
+            ->select(
+                'penjualans.id',
+                'penjualans.TanggalPenjualan',
+                'produks.NamaProduk as Produk',
+                'penjualans.TotalHarga',
+                'users.name as UsersId'
+            )
             ->get();
     
         return DataTables::of($penjualans)
-            ->addIndexColumn() // Add a column for row numbers
+            ->addIndexColumn()
             ->addColumn('action', function ($row) {
                 $bayarButton = '<a href="' . route('penjualan.bayarCash', $row->id) . '" class="btn btn-sm btn-success">Bayar</a>';
                 $notaButton = '<a href="' . route('penjualan.nota', $row->id) . '" class="btn btn-sm btn-primary">Nota</a>';
                 return $bayarButton . ' ' . $notaButton;
             })
-            ->rawColumns(['action']) // Allow HTML in the action column
+            ->rawColumns(['action'])
             ->make(true);
     }
-
 
    
 }
