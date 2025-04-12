@@ -35,31 +35,13 @@
 
 @section('content')
     <!-- Content Wrapper. Contains page content -->
-    <div class="content-wrapper">
-        <!-- Content Header (Page header) -->
-        <div class="content-header">
-            <div class="container-fluid">
-                <div class="row mb-2">
-                    <div class="col-sm-6">
-                        <h1 class="m-0">{{ $title }}</h1>
-                    </div><!-- /.col -->
-                    <div class="col-sm-6">
-                        <ol class="breadcrumb float-sm-right">
-                            <li class="breadcrumb-item"><a href="#">{{ $title }}</a></li>
-                            <li class="breadcrumb-item active">{{ $subtitle }}</li>
-                        </ol>
-                    </div><!-- /.col -->
-                </div><!-- /.row -->
-            </div><!-- /.container-fluid -->
-        </div>
-        <!-- /.content-header -->
-
-        <!-- Main content -->
-        <section class="content">
-            <div class="container-fluid">
+    <!-- Main content -->
+    <div class="content d-flex flex-column flex-column-fluid bg-gray-200" id="kt_content">
+        <div class="post d-flex flex-column-fluid " id="kt_post">
+            <div id="kt_content_container" class="container-xxl ">
                 <div class="card">
                     <div class="card-header">
-                        <h3 class="card-title">{{ $title }}</h3>
+                        <h3 class="card-title"></h3>
                         <a href="{{ route('penjualan.index') }}" class="btn btn-sm btn-warning float-right">Kembali</a>
                         @if (session()->has('success'))
                             <div class="alert alert-success">
@@ -69,9 +51,9 @@
 
                     </div>
                     <form action="{{ route('penjualan.store') }}" method="post">
-                    <div class="card-body">
-                        <table id="example1" class="table table-bordered table-striped">
-                            
+                        <div class="card-body">
+                            <table id="example1" class="table table-bordered table-striped">
+
                                 @csrf
                                 <thead>
                                     <tr>
@@ -85,7 +67,8 @@
                                 <tbody id="penjualan">
                                     <tr>
                                         <td>
-                                            <select name="ProdukId[]" id="id_produk" class="form-control kode-produk" onchange="pilihProduk(this)">
+                                            <select name="ProdukId[]" id="id_produk" class="form-control kode-produk"
+                                                onchange="pilihProduk(this)">
                                                 <option value="">Pilih Produk</option>
                                                 @foreach ($produks as $produk)
                                                     <option value="{{ $produk->id }}" data-harga="{{ $produk->Harga }}">
@@ -104,8 +87,8 @@
                                                 class="form-control jumlahProduk" oninput="hitungTotal(this)">
                                         </td>
                                         <td>
-                                            <input type="text" name="TotalHarga[]" id="TotalHarga" class="form-control totalHarga"
-                                                readonly>
+                                            <input type="text" name="TotalHarga[]" id="TotalHarga"
+                                                class="form-control totalHarga" readonly>
                                         </td>
                                         <td>
                                             <button type="button" class="btn btn-danger"
@@ -124,23 +107,23 @@
                                             <input type="text" id="total" readonly class="form-control" name="total">
                                         </td>
                                 </tfooter>
-                            
-                        </table>
-                        <button type="button" class="btn btn-primary" onclick="tambahProduk()">Tambah Produk</button>
-                    </div>
-                    <div class="card-footer">
-                        <button type="submit" class="btn btn-primary">Simpan</button>
-                    </div>
-                </form>
+
+                            </table>
+                            <button type="button" class="btn btn-primary" onclick="tambahProduk()">Tambah Produk</button>
+                        </div>
+                        <div class="card-footer">
+                            <button type="submit" class="btn btn-primary">Simpan</button>
+                        </div>
+                    </form>
                 </div>
             </div><!-- /.container-fluid -->
-        </section>
-        <!-- /.content -->
+    </div>
+    <!-- /.content -->
     </div>
     <!-- /.content-wrapper -->
 @endsection
 
-@section('js')
+@section('script')
     <!-- DataTables  & Plugins -->
     <script src="{{ asset('') }}plugins/datatables/jquery.dataTables.min.js"></script>
     <script src="{{ asset('') }}plugins/datatables-bs4/js/dataTables.bootstrap4.min.js"></script>
@@ -158,31 +141,31 @@
     <script>
         function tambahProduk() {
             const newArrow = `
-            <tr>
-                                        <td>
-                                            <select name="ProdukId[]" id="id_produk" class="form-control kode-produk" onchange="pilihProduk(this)">
-                                                <option value="">Pilih Produk</option>
-                                                @foreach ($produks as $produk)
-                                                    <option value="{{ $produk->id }}" data-harga="{{ $produk->Harga }}" >{{ $produk->NamaProduk }}
-                                                    </option>
-                                                @endforeach
-                                            </select>
+                <tr>
+                                            <td>
+                                                <select name="ProdukId[]" id="id_produk" class="form-control kode-produk" onchange="pilihProduk(this)">
+                                                    <option value="">Pilih Produk</option>
+                                                    @foreach ($produks as $produk)
+                                                        <option value="{{ $produk->id }}" data-harga="{{ $produk->Harga }}" >{{ $produk->NamaProduk }}
+                                                        </option>
+                                                    @endforeach
+                                                </select>
 
-                                        </td>
-                                        <td>
-                                            <input type="text" name="harga[]" id="harga" class="form-control harga" readonly>
-                                        </td>
-                                        <td>
-                                            <input type="number" name="JumlahProduk[]" id="JumlahProduk" class="form-control jumlahProduk" oninput="hitungTotal(this)">
-                                        </td>
-                                        <td>
-                                            <input type="text" name="TotalHarga[]" id="TotalHarga" class="form-control totalHarga" readonly>
-                                        </td>
-                                        <td>
-                                            <button type="button" class="btn btn-danger" onclick="hapusProduk(this)">Hapus</button>
-                                        </td>
-                                    </tr>
-            `;
+                                            </td>
+                                            <td>
+                                                <input type="text" name="harga[]" id="harga" class="form-control harga" readonly>
+                                            </td>
+                                            <td>
+                                                <input type="number" name="JumlahProduk[]" id="JumlahProduk" class="form-control jumlahProduk" oninput="hitungTotal(this)">
+                                            </td>
+                                            <td>
+                                                <input type="text" name="TotalHarga[]" id="TotalHarga" class="form-control totalHarga" readonly>
+                                            </td>
+                                            <td>
+                                                <button type="button" class="btn btn-danger" onclick="hapusProduk(this)">Hapus</button>
+                                            </td>
+                                        </tr>
+                `;
             $('#penjualan').append(newArrow);
         }
 
@@ -190,15 +173,14 @@
             $(buttonElement).closest('tr').remove();
         }
 
-        function pilihProduk(produk)
-        {
+        function pilihProduk(produk) {
             const selectOption = produk.options[produk.selectedIndex];
             const row = $(produk).closest('tr');
 
             const harga = $(selectOption).data('harga');
 
             const selectedKode = produk.value;
-            if($(".kode-produk").not(produk).filter((_, el) => el.value === selectedKode).length > 0) {
+            if ($(".kode-produk").not(produk).filter((_, el) => el.value === selectedKode).length > 0) {
                 alert('Produk sudah ada');
                 row.find('.kode-produk').val('');
                 return;
@@ -217,11 +199,10 @@
             hitungTotalAkhir();
         }
 
-        function hitungTotalAkhir()
-        {
+        function hitungTotalAkhir() {
             let total = 0;
 
-            $('.totalHarga').each(function() {
+            $('.totalHarga').each(function () {
                 total += parseFloat($(this).val()) || 0;
             });
 

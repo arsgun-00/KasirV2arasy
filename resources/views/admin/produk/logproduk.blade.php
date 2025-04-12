@@ -1,103 +1,80 @@
 @extends('admin.template.master')
-
-@section('css')
-    <!-- DataTables -->
-    <link rel="stylesheet" href="{{ asset('') }}plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
-    <link rel="stylesheet" href="{{ asset('') }}plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
-    <link rel="stylesheet" href="{{ asset('') }}plugins/datatables-buttons/css/buttons.bootstrap4.min.css">
+@section('title')
+    SAPRAS | Manajemen Sarana
 @endsection
 
 @section('content')
-    <!-- Content Wrapper. Contains page content -->
-    <div class="content-wrapper">
-        <!-- Content Header (Page header) -->
-        <div class="content-header">
-            <div class="container-fluid">
-                <div class="row mb-2">
-                    <div class="col-sm-6">
-                        <h1 class="m-0">{{ $title }}</h1>
-                    </div><!-- /.col -->
-                    <div class="col-sm-6">
-                        <ol class="breadcrumb float-sm-right">
-                            <li class="breadcrumb-item"><a href="#">{{ $title }}</a></li>
-                            <li class="breadcrumb-item active">{{ $subtitle }}</li>
-                        </ol>
-                    </div><!-- /.col -->
-                </div><!-- /.row -->
-            </div><!-- /.container-fluid -->
-        </div>
-        <!-- /.content-header -->
-
-        <!-- Main content -->
-        <section class="content">
-            <div class="container-fluid">
+    <div class="content d-flex flex-column flex-column-fluid bg-gray-200" id="kt_content">
+        <!--begin::Post-->
+        <div class="post d-flex flex-column-fluid " id="kt_post">
+            <!--begin::Container-->
+            <div id="kt_content_container" class="container-xxl ">
                 <div class="card">
                     <div class="card-header">
-                        <h3 class="card-title">{{ $title }}</h3>
-                        <a href="{{ route('produk.create') }}" class="btn btn-sm btn-primary float-right">Tambah</a>
-                        @if (session()->has('success'))
-                            <div class="alert alert-success">
-                                {{ session('success') }}
-                            </div>
-                        @endif
+                        <h3 class="card-title">Produk Log</h3>
 
                     </div>
                     <div class="card-body">
-                        <table id="example1" class="table table-bordered table-striped">
+                        <table class="table table-hover" id="table-produk">
                             <thead>
                                 <tr>
                                     <th>No</th>
-                                    <th>Produk</th>
-                                    <th>Penambahan Stok</th>
-                                    <th>Nama</th>
+                                    <th>Nama Produk</th>
+                                    <th>Stok</th>
                                     <th>Tanggal</th>
+                                    <th>Nama</th>
                                 </tr>
                             </thead>
-                            <tbody>
-                                @foreach ($produks as $produk)
-                                    <tr>
-                                        <td>{{ $loop->iteration }}</td>
-                                        <td>{{ $produk->NamaProduk }}</td>
-                                        <td>{{ $produk->JumlahProduk }}</td>
-                                        <td>{{ $produk->name }}</td>
-                                        <td>{{ $produk->created_at->diffForHumans() }}</td>
-                                        
-                                    </tr>
-                                @endforeach
-                            </tbody>
                         </table>
                     </div>
                 </div>
-            </div><!-- /.container-fluid -->
-        </section>
-        <!-- /.content -->
-    </div>
-    <!-- /.content-wrapper -->
-@endsection
+            </div>
+        </div>
+        <!-- Modal Tambah Sarana -->
 
-@section('js')
-    <!-- DataTables  & Plugins -->
-    <script src="{{ asset('') }}plugins/datatables/jquery.dataTables.min.js"></script>
-    <script src="{{ asset('') }}plugins/datatables-bs4/js/dataTables.bootstrap4.min.js"></script>
-    <script src="{{ asset('') }}plugins/datatables-responsive/js/dataTables.responsive.min.js"></script>
-    <script src="{{ asset('') }}plugins/datatables-responsive/js/responsive.bootstrap4.min.js"></script>
-    <script src="{{ asset('') }}plugins/datatables-buttons/js/dataTables.buttons.min.js"></script>
-    <script src="{{ asset('') }}plugins/datatables-buttons/js/buttons.bootstrap4.min.js"></script>
-    <script src="{{ asset('') }}plugins/jszip/jszip.min.js"></script>
-    <script src="{{ asset('') }}plugins/pdfmake/pdfmake.min.js"></script>
-    <script src="{{ asset('') }}plugins/pdfmake/vfs_fonts.js"></script>
-    <script src="{{ asset('') }}plugins/datatables-buttons/js/buttons.html5.min.js"></script>
-    <script src="{{ asset('') }}plugins/datatables-buttons/js/buttons.print.min.js"></script>
-    <script src="{{ asset('') }}plugins/datatables-buttons/js/buttons.colVis.min.js"></script>
+
+
+    </div>
+    </div>
+    </div>
+    </div>
+@endsection
+@section('script')
     <script>
-        $(function() {
-            $("#example1").DataTable({
-                "responsive": true,
-                "lengthChange": false,
-                "autoWidth": false,
-                "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
-            }).buttons().container().appendTo('#example1_wrapper .col-md-6:eq(0)');
+        $(document).ready(function () {
+            let table = $('#table-produk').DataTable({
+                processing: true,
+                serverSide: true,
+                responsive: false,
+                ajax: {
+                    url: "{{ route('produk.datatableLog') }}", // Ganti dengan URL yang sesuai
+                    type: 'GET',
+                },
+                columns: [
+                    { data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false }, // Nomor urut
+                { data: 'NamaProduk', name: 'NamaProduk' }, // Nama Produk
+                { data: 'JumlahProduk', name: 'JumlahProduk' }, // Jumlah Produk
+                { data: 'created_at', name: 'created_at' }, // Tanggal
+                { data: 'name', name: 'name' }, // Pengguna
+                    
+                ],
+                button: ["copy", "csv", "excel", "pdf", "print"]
+                ,
+                order: [
+                    [1, 'asc']
+                ], // Mengurutkan berdasarkan Ruangan
+                dom: "<'row mb-2'" +
+                    "<'col-sm-6 d-flex align-items-center justify-content-start dt-toolbar'l>" +
+                    "<'col-sm-6 d-flex align-items-center justify-content-end dt-toolbar'f>" +
+                    ">" +
+                    "<'table-responsive'tr>" +
+                    "<'row'" +
+                    "<'col-sm-12 col-md-5 d-flex align-items-center justify-content-center justify-content-md-start'i>" +
+                    "<'col-sm-12 col-md-7 d-flex align-items-center justify-content-center justify-content-md-end'p>" +
+                    ">"
+            });
+
+
         });
     </script>
-
 @endsection

@@ -1,37 +1,29 @@
 @extends('admin.template.master')
 
 @section('css')
-    
+
 @endsection
 
 @section('content')
     <!-- Content Wrapper. Contains page content -->
-    <div class="content-wrapper">
-        <!-- Content Header (Page header) -->
-        <div class="content-header">
-            <div class="container-fluid">
-                <div class="row mb-2">
-                    <div class="col-sm-6">
-                        <h1 class="m-0">{{ $title }}</h1>
-                    </div><!-- /.col -->
-                    <div class="col-sm-6">
-                        <ol class="breadcrumb float-sm-right">
-                            <li class="breadcrumb-item"><a href="#">{{ $title }}</a></li>
-                            <li class="breadcrumb-item active">{{ $subtitle }}</li>
-                        </ol>
-                    </div><!-- /.col -->
-                </div><!-- /.row -->
-            </div><!-- /.container-fluid -->
-        </div>
-        <!-- /.content-header -->
 
-        <!-- Main content -->
-        <section class="content">
-            <div class="container-fluid">
+    <!-- /.content-header -->
+
+    <!-- Main content -->
+    <div class="content d-flex flex-column flex-column-fluid bg-gray-200" id="kt_content">
+        <!--begin::Post-->
+        <div class="post d-flex flex-column-fluid " id="kt_post">
+            <!--begin::Container-->
+            <div id="kt_content_container" class="container-xxl ">
                 <div class="card">
                     <div class="card-header">
-                        <h3 class="card-title">{{ $title }}</h3>
-                        <a href="{{ route('produk.index') }}" class="btn btn-sm btn-warning float-right">Kembali</a>
+                        <h3 class="card-title">Tambah Data Produk</h3>
+                        <div class="card-toolbar d-flex justify-content-end">
+
+                            <a href="{{ route('produk.index') }}" class="btn text-white hover-index  btn-sm btn-warning">
+                                Kembali
+                            </a>
+                        </div>
                         @if ($errors->any())
                             @foreach ($errors->all() as $error)
                                 <div class="alert alert-danger" role="alert">
@@ -58,16 +50,16 @@
                     </div>
                 </div>
             </div><!-- /.container-fluid -->
-        </section>
-        <!-- /.content -->
+            <!-- /.content -->
+        </div>
     </div>
     <!-- /.content-wrapper -->
 @endsection
 
-@section('js')
+@section('script')
     <script>
-        $(document).ready(function() {
-            $("#form-create-produk").submit(function(e) {
+        $(document).ready(function () {
+            $("#form-create-produk").submit(function (e) {
                 e.preventDefault();
                 dataForm = $(this).serialize() + "&_token={{ csrf_token() }}";
                 $.ajax({
@@ -75,7 +67,7 @@
                     url: "{{ route('produk.store') }}",
                     data: dataForm,
                     dataType: "json",
-                    success: function(data) {
+                    success: function (data) {
                         Swal.fire({
                             icon: 'success',
                             title: 'Success',
@@ -86,7 +78,7 @@
                         $('input[name="Harga"]').val('');
                         $('input[name="Stok"]').val('');
                     },
-                    error: function(data) {
+                    error: function (data) {
                         console.log(data.message);
                         Swal.fire({
                             icon: 'error',

@@ -1,0 +1,24 @@
+:root {
+    --primary-color: #146C94; /* Oranye */
+    --secondary-color: #19A7CE; /* Hijau */
+    --text-color: #333; /* Abu-abu */
+}
+.menu-link {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    padding: 8px; /* Default padding */
+    border-radius: 6px;
+    transition: background-color 0.3s ease;
+}
+
+.hover-secondary:hover {
+    color: var(--secondary-color) !important;
+}
+
+.menu-link.active {
+    background-color: var(--primary-color) !important;
+    padding: 8px;
+    border-radius: 6px;
+    color: white !important;
+}
