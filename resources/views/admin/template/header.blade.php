@@ -1,3 +1,5 @@
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
 <div class="wrapper d-flex flex-column flex-row-fluid" id="kt_wrapper">
 <div id="kt_header" style="" class="header align-items-stretch">
     <div class="header-brand text-white" style="background-color: var(--secondary-color);">

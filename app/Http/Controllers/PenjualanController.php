@@ -8,7 +8,8 @@ use App\Models\Penjualan;
 use App\Models\Produk;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Yajra\DataTables\DataTables;
+use Yajra\DataTables\Facades\DataTables;
+
 
 class PenjualanController extends Controller
 {
@@ -17,53 +18,25 @@ class PenjualanController extends Controller
      */
     public function index()
     {
-        $data['main'] = 'Penjualan';
-        $data['sub'] = 'Penjualan Home';
-       
-        return view('admin.penjualan.index', $data);
-    }
-
-    public function datatable()
-    {
+        $main = 'Penjualan';
+        $sub = 'Penjualan Home';
+        $title = 'Penjualan';
+        $subtitle = 'Index';
         $penjualans = Penjualan::join('users', 'penjualans.UsersId', '=', 'users.id')
-            ->leftJoin('bayars', 'penjualans.id', '=', 'bayars.PenjualanId')
-            ->select('penjualans.*', 'users.name as UserName', 'bayars.StatusBayar') // Gunakan alias 'UserName'
-            ->get();
-    
-        return DataTables::of($penjualans)
-            ->addIndexColumn()
-            ->addColumn('action', function ($row) {
-                $id = $row->id;
-                if ($row->StatusBayar == 'Lunas') {
-                    // Jika status bayar "Lunas", tampilkan tombol Nota
-                    return '<a href="' . route('penjualan.nota', $id) . '" class="btn btn-success" target="_blank">Nota</a>';
-                } else {
-                    // Jika belum lunas, tampilkan dropdown untuk pembayaran
-                    return '
-                        <div class="dropdown">
-                            <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                Bayar
-                            </button>
-                            <ul class="dropdown-menu">
-                                <li><a class="dropdown-item" href="' . route('penjualan.bayarCash', $id) . '">Cash</a></li>
-                                <li><a class="dropdown-item" href="#">Transfer/Qris</a></li>
-                            </ul>
-                        </div>';
-                }
-            })
-            ->rawColumns(['action']) // Memastikan kolom HTML tidak di-escape
-            ->make(true);
-        }
+            ->Leftjoin('bayars', 'penjualans.id', '=', 'bayars.PenjualanId')
+            ->select('penjualans.*', 'users.name','bayars.StatusBayar')->get();
+        return view('admin.penjualan.index', compact('penjualans', 'title', 'subtitle', 'main', 'sub'));
+    }
 
     /**
      * Show the form for creating a new resource.
      */
     public function create()
     {
-        $data['main'] = 'Penjualan';
-        $data['sub'] = 'Penjualan Create';
-        $data['produks']= Produk::where('Stok', '>', 0)->get();
-        return view('admin.penjualan.create', $data);
+        $title = 'Penjualan';
+        $subtitle = 'Create';
+        $produks = Produk::where('Stok', '>', 0)->get();
+        return view('admin.penjualan.create', compact('title', 'subtitle', 'produks'));
     }
 
     /**
@@ -127,51 +100,62 @@ class PenjualanController extends Controller
         //
     }
 
+  
     public function bayarCash($id)
     {
-        $data['main'] = 'Penjualan';
-        $data['sub'] = 'Bayar Cash';
-        
-        $data['penjualan'] = Penjualan::find($id);
-        $data['detailpenjualan'] = DetailPenjualan::join('produks', 'detail_penjualans.ProdukId', '=', 'produks.id')
-        ->where('PenjualanId', $id)->get();
-        return view('admin.penjualan.bayarCash', $data);
+        $title = 'Penjualan';
+        $subtitle = 'Bayar Cash';
+        $penjualan = Penjualan::find($id);
+        $detailpenjualan = DetailPenjualan::join('produks', 'detail_penjualans.ProdukId', '=', 'produks.id')
+            ->where('PenjualanId', $id)->get();
+        return view('admin.penjualan.bayarCash', compact('title', 'subtitle', 'penjualan', 'detailpenjualan'));
     }
 
     public function bayarCashStore(Request $request)
     {
-       $validate = $request->validate([
-           'JumlahBayar' => 'required',
-       ]);
-
-       $simpan = Bayar::create([
-           'PenjualanId' => $request->id,
-           'TanggalBayar' => date('Y-m-d H:i:s'),
-           'TotalBayar' => $request->JumlahBayar,
-           'Kembalian' => $request->Kembalian,
-           'StatusBayar' => 'Lunas',
-           'JenisBayar' => 'Cash',
-       ]);
-
-       $detailPenjualan = DetailPenjualan::where('PenjualanId', $request->id)->get();
-       foreach ($detailPenjualan as $detail) {
-           $produk = Produk::find($detail->ProdukId);
-           if($produk){
-               $produk->Stok -= $detail->JumlahProduk;
-               $produk->Users_id() = Auth::user()->id;
-               $produk->save();
-           } 
-
-       }
-       return response()->json(['status' => 200, 'message' => 'Pembayaran Berhasil']);
-
+        $validate = $request->validate([
+            'JumlahBayar' => 'required',
+        ]);
+    
+        try {
+            \Illuminate\Support\Facades\DB::beginTransaction();
+    
+            Bayar::create([
+                'PenjualanId' => $request->id,
+                'TanggalBayar' => date('Y-m-d H:i:s'),
+                'TotalBayar' => $request->JumlahBayar,
+                'Kembalian' => $request->Kembalian,
+                'StatusBayar' => 'Lunas',
+                'JenisBayar' => 'Cash',
+            ]);
+    
+            $detailPenjualan = DetailPenjualan::where('PenjualanId', $request->id)->get();
+    
+            foreach ($detailPenjualan as $detail) {
+                $produk = Produk::find($detail->ProdukId);
+                if ($produk) {
+                    $produk->Stok -= $detail->JumlahProduk;
+                    $produk->Users_id = Auth::user()->id;
+                    $produk->save();
+                }
+            }
+    
+            \Illuminate\Support\Facades\DB::commit();
+    
+            return response()->json(['status' => 200, 'message' => 'Pembayaran Berhasil']);
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\DB::rollBack();
+    
+            return response()->json(['status' => 500, 'message' => 'Pembayaran Gagal: ' . $e->getMessage()]);
+        }
     }
+
 
     public function Nota($id)
     {
         $penjualan = Penjualan::find($id);
         $detailpenjualan = DetailPenjualan::join('produks', 'detail_penjualans.ProdukId', '=', 'produks.id')
-        ->where('PenjualanId', $id)->get();
+            ->where('PenjualanId', $id)->get();
         $bayar = Bayar::where('PenjualanId', $id)->get();
         $totalBayar = 0;
         $kembalian = 0;
@@ -179,7 +163,25 @@ class PenjualanController extends Controller
             $totalBayar = $item->TotalBayar;
             $kembalian = $item->Kembalian;
         }
-        return view('admin.penjualan.nota', compact('penjualan', 'detailpenjualan', 'totalBayar','kembalian'));
+        return view('admin.penjualan.nota', compact('penjualan', 'detailpenjualan', 'totalBayar', 'kembalian'));
+    }
+    public function datatable()
+    {
+        $penjualans = Penjualan::join('users', 'penjualans.UsersId', '=', 'users.id')
+            ->select('penjualans.id', 'penjualans.TanggalPenjualan', 'penjualans.TotalHarga', 'users.name as UsersId')
+            ->get();
+    
+        return DataTables::of($penjualans)
+            ->addIndexColumn() // Add a column for row numbers
+            ->addColumn('action', function ($row) {
+                $bayarButton = '<a href="' . route('penjualan.bayarCash', $row->id) . '" class="btn btn-sm btn-success">Bayar</a>';
+                $notaButton = '<a href="' . route('penjualan.nota', $row->id) . '" class="btn btn-sm btn-primary">Nota</a>';
+                return $bayarButton . ' ' . $notaButton;
+            })
+            ->rawColumns(['action']) // Allow HTML in the action column
+            ->make(true);
     }
 
+
+   
 }

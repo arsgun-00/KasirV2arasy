@@ -16,6 +16,7 @@ return new class extends Migration
             $table->string('NamaProduk');
             $table->decimal('Harga', 10, 2);
             $table->integer('Stok');
+            $table->string('status')->nullable(); // Add the 'status' column
             $table->unsignedBigInteger('Users_id');
             $table->timestamps();
         });
@@ -27,5 +28,8 @@ return new class extends Migration
     public function down(): void
     {
         Schema::dropIfExists('produks');
+        Schema::table('produks', function (Blueprint $table) {
+            $table->dropColumn('status'); // Rollback the 'status' column
+        });
     }
 };

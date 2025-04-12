@@ -16,8 +16,18 @@ Route::resource('users', UserController::class);
 
 // dasboard
 Route::get('/dashboard',[DashboardController::class,'index'])->name('dashboard');
-
+Route::get('/top-selling-products', [DashboardController::class, 'getTopSellingProducts']);
+Route::get('/low-stock-products', [DashboardController::class, 'getLowStockProducts']);
+Route::get('/monthly-revenue', [DashboardController::class, 'getMonthlyRevenue']);
 Route::get('/logout', [UserController::class, 'logout'])->name('logout');
+Route::get('/penjualan/datatable', [PenjualanController::class, 'datatable'])->name('penjualan.datatable');
+Route::get('/penjualan/{id}/bayar', [PenjualanController::class, 'bayarCash'])->name('penjualan.bayarCash');
+Route::post('/penjualan/bayar-cash', [PenjualanController::class, 'bayarCashStore'])->name('penjualan.bayarCashStore');
+Route::get('/penjualan/{id}/nota', [PenjualanController::class, 'Nota'])->name('penjualan.nota');
+Route::get('/dashboard/get-top-selling-products', [DashboardController::class, 'getTopSellingProducts'])->name('dashboard.getTopSellingProducts');
+Route::get('/dashboard/get-low-stock-products', [DashboardController::class, 'getLowStockProducts'])->name('dashboard.getLowStockProducts');
+Route::get('/dashboard/get-monthly-revenue', [DashboardController::class, 'getMonthlyRevenue'])->name('dashboard.getMonthlyRevenue');
+
 
 Route::group(['middleware' => ['auth']], function () {
     Route::post('produk/cetak/label',[ProdukController::class,'cetakLabel'])->name('produk.cetakLabel');

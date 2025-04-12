@@ -1,122 +1,167 @@
-@extends('admin.template.master')
+
+@extends(config('view.paths.admin_template_master', 'admin.template.master'))
+
 @section('title')
-    SAPRAS | Dashboard
+    Dashboard | POS System
 @endsection
 
 @section('content')
-    <div class="content d-flex flex-column flex-column-fluid" id="kt_content">
-        <!--begin::Post-->
-        <div class="post d-flex flex-column-fluid" id="kt_post">
-            <!--begin::Container-->
-            <div id="kt_content_container" class="container-xxl">
-                <!--begin::Row-->
-
-                <div class="row g-5 g-xl-8 mt-1">
-                    <div class="col-xl-4">
-                        <!--begin::Statistics Widget 5-->
-                        <a href="#" class="card hoverable card-xl-stretch mb-xl-8" style="background-color: #15406a">
-                            <!--begin::Body-->
-
-                            <div class="card-body">
-                                <i class="fas fa-box text-gray-100 fs-2x ms-n1"></i>
-                                <div class=" fw-bold fs-2 mb-2 mt-5 text-white"></div>
-                                <div class="fw-semibold  text-white">Total Barang Keseluruhan</div>
-                            </div>
-                            <!--end::Body-->
-                        </a>
-                        <!--end::Statistics Widget 5-->
-                    </div>
-                    <div class="col-xl-4">
-                        <!--begin::Statistics Widget 5-->
-                        <a href="#" class="card hoverable card-xl-stretch mb-xl-8" style="background-color: #15406a">
-                            <!--begin::Body-->
-
-                            <div class="card-body">
-                                <i class="fas fa-file-alt text-gray-100 fs-2x ms-n1"></i>
-                                <div class=" fw-bold fs-2 mb-2 mt-5 text-white"></div>
-                                <div class="fw-semibold  text-white">Total Laporan Kerusakan</div>
-                            </div>
-                            <!--end::Body-->
-                        </a>
-                        <!--end::Statistics Widget 5-->
-                    </div>
-                    <div class="col-xl-4">
-                        <!--begin::Statistics Widget 5-->
-                        <a href="#" class="card hoverable card-xl-stretch mb-xl-8" style="background-color: #15406a">
-                            <!--begin::Body-->
-
-                            <div class="card-body">
-                                <i class="fas fa-building text-gray-100 fs-2x ms-n1"></i>
-                                <div class=" fw-bold fs-2 mb-2 mt-5 text-white"></div>
-                                <div class="fw-semibold  text-white">Total Keseluruhan Ruangan</div>
-                            </div>
-                            <!--end::Body-->
-                        </a>
-                        <!--end::Statistics Widget 5-->
-                    </div>
-
-                </div>
-                <div class="row g-5 g-xl-8">
-                    <div class="col-xl-12">
-                        <!--begin::Statistics Widget 5-->
-                        <div class="card hoverable card-xl-stretch mb-xl-8">
-                            <!--begin::Body-->
-                            <div class="card-body">
-                                <div id="container" style="width:100%;height:500px;"></div>
-                            </div>
-                            <!--end::Body-->
+<div class="content d-flex flex-column flex-column-fluid" id="kt_content">
+    <div class="post d-flex flex-column-fluid" id="kt_post">
+        <div id="kt_content_container" class="container-xxl">
+            <!-- Summary Section -->
+            <div class="row g-5 g-xl-8 mt-5">
+                <!-- Total Sales -->
+                <div class="col-xl-6">
+                    <div class="card bg-primary text-white shadow-sm hover-card">
+                        <div class="card-body">
+                            <h5 class="card-title"><i class="fas fa-shopping-cart"></i> Total Sales</h5>
+                            <p class="card-text fs-3 fw-bold">{{ $totalSales }}</p>
                         </div>
-                        <!--end::Statistics Widget 5-->
                     </div>
-
-
-
                 </div>
-                <div class="row g-5 g-xl-8 mt-1">
-                    <div class="col-xl-4">
-                        <!--begin::Statistics Widget 5-->
-                        <a href="#" class="card hoverable card-xl-stretch mb-xl-8" style="background-color: #007bff">
-                            <!--begin::Body-->
-
-                            <div class="card-body">
-                                <i class="fas fa-check-circle text-gray-100 fs-2x ms-n1"></i>
-                                <div class=" fw-bold fs-2 mb-2 mt-5 text-white"></div>
-                                <div class="fw-semibold  text-white">Total Barang Baik</div>
-                            </div>
-                            <!--end::Body-->
-                        </a>
-                        <!--end::Statistics Widget 5-->
+                <!-- Total Revenue -->
+                <div class="col-xl-6">
+                    <div class="card bg-success text-white shadow-sm hover-card">
+                        <div class="card-body">
+                            <h5 class="card-title"><i class="fas fa-dollar-sign"></i> Total Revenue</h5>
+                            <p class="card-text fs-3 fw-bold">Rp {{ number_format($totalRevenue, 0, ',', '.') }}</p>
+                        </div>
                     </div>
-                    <div class="col-xl-4">
-                        <!--begin::Statistics Widget 5-->
-                        <a href="#" class="card hoverable card-xl-stretch mb-xl-8" style="background-color: #fd7e14">
-                            <!--begin::Body-->
+                </div>
+            </div>
 
-                            <div class="card-body">
-                                <i class="fas fa-exclamation-triangle text-gray-100 fs-2x ms-n1"></i>
-                                <div class=" fw-bold fs-2 mb-2 mt-5 text-white"></div>
-                                <div class="fw-semibold  text-white">Total Barang Kurang Baik</div>
-                            </div>
-                            <!--end::Body-->
-                        </a>
-                        <!--end::Statistics Widget 5-->
+            <!-- Charts and Low Stock Products -->
+            <div class="row g-5 g-xl-8 mt-5">
+                <!-- Top-Selling Products Chart -->
+                <div class="col-xl-4">
+                    <div class="card shadow-sm">
+                        <div class="card-header bg-primary text-white">
+                            <h3 class="card-title"><i class="fas fa-chart-bar"></i> Top-Selling Products</h3>
+                        </div>
+                        <div class="card-body">
+                            <canvas id="topSellingProductsChart" width="400" height="200"></canvas>
+                        </div>
                     </div>
-                    <div class="col-xl-4">
-                        <!--begin::Statistics Widget 5-->
-                        <a href="#" class="card hoverable card-xl-stretch mb-xl-8" style="background-color:#dc3545;">
-                            <!--begin::Body-->
+                </div>
 
-                            <div class="card-body">
-                                <i class="fas fa-times-circle text-gray-100 fs-2x ms-n1"></i>
-                                <div class=" fw-bold fs-2 mb-2 mt-5 text-white"></div>
-                                <div class="fw-semibold  text-white">Total Barang Rusak Berat</div>
-                            </div>
-                            <!--end::Body-->
-                        </a>
-                        <!--end::Statistics Widget 5-->
+                <!-- Monthly Revenue Chart -->
+                <div class="col-xl-4">
+                    <div class="card shadow-sm">
+                        <div class="card-header bg-info text-white">
+                            <h3 class="card-title"><i class="fas fa-chart-line"></i> Monthly Revenue</h3>
+                        </div>
+                        <div class="card-body">
+                            <canvas id="monthlyRevenueChart" width="400" height="200"></canvas>
+                        </div>
                     </div>
+                </div>
 
+                <!-- Low Stock Products Table -->
+                <div class="col-xl-4">
+                    <div class="card shadow-sm">
+                        <div class="card-header bg-danger text-white">
+                            <h3 class="card-title"><i class="fas fa-exclamation-triangle"></i> Low Stock Products</h3>
+                        </div>
+                        <div class="card-body">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Product Name</th>
+                                        <th>Stock</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="lowStockTableBody">
+                                    <!-- Rows will be populated dynamically -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
-    @endsection
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Top-Selling Products Chart
+        const topSellingCtx = document.getElementById('topSellingProductsChart').getContext('2d');
+        fetch("{{ route('dashboard.getTopSellingProducts') }}")
+            .then(response => response.json())
+            .then(data => {
+                const labels = data.map(item => item.NamaProduk); // Product names
+                const values = data.map(item => item.total_sold); // Total sold
+
+                new Chart(topSellingCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Total Sold',
+                            data: values,
+                            backgroundColor: 'rgba(54, 162, 235, 0.5)',
+                            borderColor: 'rgba(54, 162, 235, 1)',
+                            borderWidth: 1,
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                            }
+                        }
+                    }
+                });
+            });
+
+        // Monthly Revenue Chart
+        const monthlyRevenueCtx = document.getElementById('monthlyRevenueChart').getContext('2d');
+        fetch("{{ route('dashboard.getMonthlyRevenue') }}")
+            .then(response => response.json())
+            .then(data => {
+                const labels = data.map(item => `Month ${item.month}`); // Months
+                const values = data.map(item => item.revenue); // Revenue
+
+                new Chart(monthlyRevenueCtx, {
+                    type: 'line',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Revenue',
+                            data: values,
+                            borderColor: 'rgba(75, 192, 192, 1)',
+                            backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                            borderWidth: 2,
+                            tension: 0.4,
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                            }
+                        }
+                    }
+                });
+            });
+
+        // Low Stock Products Table
+        fetch("{{ route('dashboard.getLowStockProducts') }}")
+            .then(response => response.json())
+            .then(data => {
+                const tableBody = document.getElementById('lowStockTableBody');
+                data.forEach(product => {
+                    const row = `<tr>
+                        <td>${product.NamaProduk}</td>
+                        <td>${product.Stok}</td>
+                    </tr>`;
+                    tableBody.innerHTML += row;
+                });
+            });
+    });
+</script>
+@endsection
